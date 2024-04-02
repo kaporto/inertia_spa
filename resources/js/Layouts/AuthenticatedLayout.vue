@@ -37,7 +37,7 @@ router.on('finish',() =>{
                                     Dashboard
                                 </NavLink>
                                 <NavLink :href="route('products.index')" :active="route().current('products.*')">
-                                    Product
+                                    Products
                                 </NavLink>
                             </div>
                         </div>
@@ -101,7 +101,7 @@ router.on('finish',() =>{
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('products.index')" :active="route().current('products.*')">
-                            Product
+                            Products
                         </ResponsiveNavLink>
                     </div>
 
