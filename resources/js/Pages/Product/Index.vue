@@ -1,8 +1,12 @@
 <script setup>
+import { ref } from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Sortable from "@/Components/Sortable.vue";
+import Checkbox from "@/Components/Checkbox.vue";
 import { Head, Link, router } from '@inertiajs/vue3';
+
+const selectedIds = ref([]);
 
 const props = defineProps({
     products: {
@@ -52,7 +56,8 @@ const deleteRow = (id) => {
         <div class="py-6">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div
-                    class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-end pb-6">
+                    class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-6">
+                    {{ selectedIds }}
                     <div class="relative">
                         <div
                             class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
@@ -73,6 +78,9 @@ const deleteRow = (id) => {
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
                                 <tr>
+                                    <th scope="col" class="px-6 py-3" width="5">
+                                        <Checkbox :checked="false"/>
+                                    </th>
                                     <th scope="col" class="px-6 py-3" width="5">
                                         No
                                     </th>
@@ -96,6 +104,9 @@ const deleteRow = (id) => {
                             <tbody>
                                 <tr v-for="(product, index) in products.data" :key="product.id"
                                     class="bg-white border-b hover:bg-gray-50">
+                                    <td class="px-6 py-4">
+                                        <Checkbox :value="product.id" v-model:checked="selectedIds" />
+                                    </td>
                                     <td class="px-6 py-4">
                                         {{ products.meta.from + index }}
                                     </td>
