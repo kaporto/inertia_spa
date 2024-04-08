@@ -5,9 +5,11 @@ import Pagination from '@/Components/Pagination.vue';
 import Sortable from "@/Components/Sortable.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import CheckAll from "@/Components/CheckAll.vue";
+import BulkEdit from "@/Components/BulkEdit.vue";
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const selectedIds = ref([]);
+const showModal = ref(false)
 
 const props = defineProps({
     products: {
@@ -67,10 +69,16 @@ const deleteSelected = () => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div
                     class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-6">
-                    <button type="button" class="px-3 py-2.5 text-sm font-medium text-center text-white rounded-md"
-                        :class="{ 'bg-red-300 cursor-not-allowed': !selectedIds.length, 'bg-red-500': selectedIds.length }"
-                        :disabled="!selectedIds.length" @click="deleteSelected">
-                        Delete Selected</button>
+                    <div class="space-x-3">
+                        <button type="button" class="px-3 py-2.5 text-sm font-medium text-center text-white rounded-md"
+                            :class="{ 'bg-red-300 cursor-not-allowed': !selectedIds.length, 'bg-red-500': selectedIds.length }"
+                            :disabled="!selectedIds.length" @click="deleteSelected">
+                            Delete Selected</button>
+                        <button type="button" class="px-3 py-2.5 text-sm font-medium text-center text-white rounded-md"
+                            :class="{ 'bg-cyan-300 cursor-not-allowed': !selectedIds.length, 'bg-cyan-500': selectedIds.length }"
+                            :disabled="!selectedIds.length" @click="showModal = true">
+                            Edit Selected</button>
+                    </div>
                     <div class="relative">
                         <div
                             class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
@@ -152,5 +160,6 @@ const deleteSelected = () => {
                 </div>
             </div>
         </div>
+        <BulkEdit :show="showModal" @close="showModal = false" />
     </AuthenticatedLayout>
 </template>
