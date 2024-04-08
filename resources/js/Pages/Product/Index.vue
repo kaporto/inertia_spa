@@ -35,6 +35,15 @@ const deleteRow = (id) => {
         })
     }
 }
+
+const deleteSelected = () => {
+    if (window.confirm("Are you sure to delete selected products?")) {
+        router.delete(route('products.bulk-destroy', selectedIds.value.join(',')), {
+            preserveScroll: true,
+            onSuccess: () => selectedIds.value = []
+        })
+    }
+}
 </script>
 
 <template>
@@ -58,7 +67,10 @@ const deleteRow = (id) => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div
                     class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-6">
-                    {{ selectedIds }}
+                    <button type="button" class="px-3 py-2.5 text-sm font-medium text-center text-white rounded-md"
+                        :class="{ 'bg-red-300 cursor-not-allowed': !selectedIds.length, 'bg-red-500': selectedIds.length }"
+                        :disabled="!selectedIds.length" @click="deleteSelected">
+                        Delete Selected</button>
                     <div class="relative">
                         <div
                             class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
@@ -80,7 +92,7 @@ const deleteRow = (id) => {
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
                                 <tr>
                                     <th scope="col" class="px-6 py-3" width="5">
-                                        <CheckAll :rows="products.data" v-model="selectedIds"/>
+                                        <CheckAll :rows="products.data" v-model="selectedIds" />
                                     </th>
                                     <th scope="col" class="px-6 py-3" width="5">
                                         No
