@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Sortable from "@/Components/Sortable.vue";
 import Checkbox from "@/Components/Checkbox.vue";
+import CheckAll from "@/Components/CheckAll.vue";
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const selectedIds = ref([]);
@@ -79,7 +80,7 @@ const deleteRow = (id) => {
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
                                 <tr>
                                     <th scope="col" class="px-6 py-3" width="5">
-                                        <Checkbox :checked="false"/>
+                                        <CheckAll :rows="products.data" v-model="selectedIds"/>
                                     </th>
                                     <th scope="col" class="px-6 py-3" width="5">
                                         No
