@@ -19,19 +19,27 @@ class ProductController extends Controller
     public function index()
     {        
         $products = auth()->user()
-                            ->products()
-                            ->latest()
+                            ->products()                            
                             ->with('category')
                             ->where(function ($query){
                                 if($search = request()->search){
                                     $query->where('name','like','%'.$search.'%')
-                                    ->orWhereHas('category', function ($query) use ($search){
-                                        $query->where('name','like','%'.$search.'%');
+                                    ->orWhereHas('category', function ($query) use ($search) {
+                                        $query->where('name', 'like', '%' . $search . '%');
                                     });
                                 }
                             })
+                            ->when(!request()->query('sort_by'), function ($query) {
+                                $query->latest();
+                            })
+                            ->when(in_array(ltrim(request()->query('sort_by'),'-'),['name','price','weight']), function ($query) {
+                                $sortBy = request()->query('sort_by');
+                                $field = ltrim($sortBy, '-');
+                                $direction = substr($sortBy, 0, 1) === '-' ? 'desc' : 'asc';
+                                $query->orderBy($field, $direction);
+                            })
                             ->paginate(10)
-                            ->withQueryString();
+                            ->withQueryString();                            
         //return ProductResource::collection($products);
         return inertia('Product/Index', [
             'products' => ProductResource::collection($products),

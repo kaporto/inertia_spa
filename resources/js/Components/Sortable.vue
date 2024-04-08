@@ -1,7 +1,6 @@
 <script setup>
 import { router } from "@inertiajs/vue3";
 import { computed } from "vue";
-
 const props = defineProps({
     name: {
         type: String,
@@ -12,7 +11,6 @@ const props = defineProps({
         required: true
     },
 })
-
 const sortClass = computed(() => {
     const urlParams = new URLSearchParams(window.location.search)
     let sortBy = urlParams.get('sort_by') || ""
@@ -21,14 +19,11 @@ const sortClass = computed(() => {
         (sortDir === '-' ? 'desc' : 'asc') :
         ""
 })
-
 const navigate = () => {
     const urlParams = new URLSearchParams(window.location.search)
     let sortBy = urlParams.get('sort_by') || ""
     let sortDir = sortBy.charAt(0)
-
     sortBy = !sortBy || sortDir === '-' ? props.name : `-${props.name}`
-
     urlParams.set('sort_by', sortBy)
     const params = Object.fromEntries(urlParams.entries())
     router.get(route(route().current()), params)
