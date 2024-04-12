@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BulkUpdateProductRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\CategoryResource;
@@ -17,29 +18,29 @@ class ProductController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {        
+    {
         $products = auth()->user()
-                            ->products()                            
-                            ->with('category')
-                            ->where(function ($query){
-                                if($search = request()->search){
-                                    $query->where('name','like','%'.$search.'%')
-                                    ->orWhereHas('category', function ($query) use ($search) {
-                                        $query->where('name', 'like', '%' . $search . '%');
-                                    });
-                                }
-                            })
-                            ->when(!request()->query('sort_by'), function ($query) {
-                                $query->latest();
-                            })
-                            ->when(in_array(ltrim(request()->query('sort_by'),'-'),['name','price','weight']), function ($query) {
-                                $sortBy = request()->query('sort_by');
-                                $field = ltrim($sortBy, '-');
-                                $direction = substr($sortBy, 0, 1) === '-' ? 'desc' : 'asc';
-                                $query->orderBy($field, $direction);
-                            })
-                            ->paginate(10)
-                            ->withQueryString();                            
+            ->products()
+            ->with('category')
+            ->where(function ($query) {
+                if ($search = request()->search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhereHas('category', function ($query) use ($search) {
+                            $query->where('name', 'like', '%' . $search . '%');
+                        });
+                }
+            })
+            ->when(!request()->query('sort_by'), function ($query) {
+                $query->latest();
+            })
+            ->when(in_array(ltrim(request()->query('sort_by'), '-'), ['name', 'price', 'weight']), function ($query) {
+                $sortBy = request()->query('sort_by');
+                $field = ltrim($sortBy, '-');
+                $direction = substr($sortBy, 0, 1) === '-' ? 'desc' : 'asc';
+                $query->orderBy($field, $direction);
+            })
+            ->paginate(10)
+            ->withQueryString();
         //return ProductResource::collection($products);
         return inertia('Product/Index', [
             'products' => ProductResource::collection($products),
@@ -53,7 +54,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return inertia('Product/Create',[
+        return inertia('Product/Create', [
             'categories' => CategoryResource::collection(Category::orderBy('name')->get())
         ]);
     }
@@ -65,8 +66,8 @@ class ProductController extends Controller
     {
         $request->user()->products()->create($request->validated());
         return redirect()
-        ->route('products.index')
-        ->with('message','Product has been created successfully.');
+            ->route('products.index')
+            ->with('message', 'Product has been created successfully.');
     }
 
     /**
@@ -74,7 +75,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return inertia('Product/Show',[
+        return inertia('Product/Show', [
             'product' => ProductResource::make($product)
         ]);
     }
@@ -84,7 +85,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return inertia('Product/Edit',[
+        return inertia('Product/Edit', [
             'categories' => CategoryResource::collection(Category::orderBy('name')->get()),
             'product' => ProductResource::make($product)
         ]);
@@ -97,8 +98,20 @@ class ProductController extends Controller
     {
         $product->update($request->validated());
         return redirect()
-                    ->route('products.index')
-                    ->with('message','Product has been updated successfully.');
+            ->route('products.index')
+            ->with('message', 'Product has been updated successfully.');
+    }
+
+
+    public function bulkUpdate(BulkUpdateProductRequest $request)
+    {
+        Product::whereIn('id', $request->product_ids)
+                        ->update([
+                            'category_id' => $request->category_id
+                        ]);
+        return redirect()
+            ->route('products.index')
+            ->with('message', 'Selected products updated successfully.');
     }
 
     /**
@@ -108,17 +121,17 @@ class ProductController extends Controller
     {
         $product->delete();
         return redirect()
-                        ->route('products.index')
-                        ->with('message','Product has been deleted successfully.');
+            ->route('products.index')
+            ->with('message', 'Product has been deleted successfully.');
     }
 
     public function bulkDestroy(string $ids)
     {
-      
+
         $ids = explode(',', $ids);
         Product::destroy($ids);
         return redirect()
-                        ->route('products.index')
-                        ->with('message','Selected products deleted successfully.');
+            ->route('products.index')
+            ->with('message', 'Selected products deleted successfully.');
     }
 }
